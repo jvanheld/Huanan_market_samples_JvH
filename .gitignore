@@ -39,3 +39,4 @@ results/plots/*
 !results/rt_qpcr
 results/rt_qpcr/*
 !results/rt_qpcr/rt_qpcr.csv
+.Rproj.user
