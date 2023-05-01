@@ -95,7 +95,6 @@ parameters <- list()
 parameters$dirs <- list()
 
 parameters$dirs$base <- ".." ## Paths are relative to the src directory
-parameters$dirs$data <- file.path(parameters$dirs$base, "data")
 
 ## Result dir
 parameters$dirs$results <- file.path(parameters$dirs$base, "results")
@@ -105,9 +104,11 @@ if (is.numeric(parameters$selected_week)) {
 dir.create(parameters$dirs$results, showWarnings = FALSE, recursive = TRUE)
 
 
+
+
 ## Input files
 infiles <- list()
-infiles$mito_composition_per_sample <- file.path(parameters$dirs$data, "mito_composition_by_sample.csv")
+infiles$mito_composition_per_sample <- file.path(parameters$dirs$base, "results", "aggregated_counts", "mito_composition_by_sample.csv")
 
 ## Epsilon for log10 conversion
 parameters$epsilon <- 0.1
@@ -198,7 +199,7 @@ aligned_per_sample_vs_species_common_name <- as.data.frame.matrix(aligned_per_sa
 # class(aligned_per_sample_vs_species_common_name)
 # dim(aligned_per_sample_vs_species_common_name)
 aligned_per_sample_vs_species_common_name[, "SARS-CoV-2"] <- sars2_per_sample[rownames(aligned_per_sample_vs_species_common_name)]
-View(aligned_per_sample_vs_species_common_name)
+# View(aligned_per_sample_vs_species_common_name)
 # class(aligned_per_sample_vs_species_common_name)
 # dim(aligned_per_sample_vs_species_common_name)
 # aligned_per_sample_vs_species_common_name$`SARS-CoV-2`
