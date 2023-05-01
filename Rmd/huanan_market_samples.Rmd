@@ -4,8 +4,8 @@ author: "Jacques van Helden"
 date: "`r Sys.Date()`"
 output:
   html_document:
-    self_contained: yes
-    code_download: true
+    self_contained: no
+    code_download: false
     code_folding: "hide"
     fig_caption: yes
     highlight: zenburn
@@ -148,9 +148,8 @@ Number of species: `r stat$n_species`
 
 ## Number of samples per species
 
-```{r samples_per_species, fig.width=12, fig.height=8, out.width="100%", fig.cap="Number of positive samples per species (top) and of different species per sample (bottom)"}
+```{r samples_per_species, fig.width=12, fig.height=6, out.width="100%", fig.cap="Number of positive samples per species (top) and of different species per sample (bottom)"}
 
-par(mfrow=c(2,1))
 
 samples_per_species <- sort(table(subset(mito_composition_per_sample, aligned_reads > 0, select = "species_common_name")), decreasing = TRUE)
 
@@ -162,6 +161,13 @@ barplot(samples_per_species,
         ylim=c(0,180),
         cex.names = 0.7, las = 2)
 abline(h = stat$n_samples)
+
+par(par_ori, no.readonly = TRUE)
+```
+
+## Number of species per sample
+
+```{r species_per_sample, fig.width=12, fig.height=6, out.width="100%", fig.cap="Number of positive samples per species (top) and of different species per sample (bottom)"}
 
 par(mar=c(5,5,4,1))
 barplot(sort(table(subset(mito_composition_per_sample, aligned_reads > 0, select = "sample")), decreasing = TRUE), 
@@ -180,7 +186,7 @@ par(par_ori, no.readonly = TRUE)
 
 ## Samples vs species (common name)
 
-```{r samples_vs_species_heatmap, fig.width=12, fig.height=12, out.width="100%", fig.cap="Heatmap showing the number of aligned reads per sample (rows) and species common name (columns). Counts were log10-converted to highlight the full range of values. Zero counts are displayed in yellow. "}
+```{r counts_per_samples_vs_species_heatmap, fig.width=12, fig.height=12, out.width="100%", fig.cap="Heatmap showing the number of aligned reads per sample (rows) and species common name (columns). Counts were log10-converted to highlight the full range of values. Zero counts are displayed in yellow. "}
 #### Counts per sample and per species
 
 ## Compute a contingency table with the number of reads per samples and common_name ##
@@ -251,7 +257,7 @@ aligned_per_species <- apply(aligned_per_sample_vs_species_common_name, 2, sum)
 
 ## Correlations between mitochondrial genome and SARS-CoV-2 read counts
 
-```{r racoon_dog, fig.width=8, fig.height=12, out.width="100%", fig.cap="Number of reads (log10-transformed) aligned on mitochondrial genome of selected species (abcsissa) versus SARS-CoV-2 (ordinate)."}
+```{r mito_vs_sars2, fig.width=8, fig.height=12, out.width="100%", fig.cap="Number of reads (log10-transformed) aligned on mitochondrial genome of selected species (abcsissa) versus SARS-CoV-2 (ordinate)."}
 
 species_of_interest <- c("human", "cow", "raccoon dog", "snakehead fish", "Largemouth bass", "carp")
 selected_species <- "human"
@@ -311,7 +317,7 @@ par(par_ori, no.readonly = TRUE)
 
 ## References
 
-Bloom JD. Association between SARS-CoV-2 and metagenomic content of samples from the Huanan Seafood Market. Microbiology, 2023 DOI:10.1101/2023.04.25.538336.
+Bloom JD. Association between SARS-CoV-2 and metagenomic content of samples from the Huanan Seafood Market. Microbiology, 2023 DOI: [10.1101/2023.04.25.538336](https://doi.org/10.1101/2023.04.25.538336).
 
-Liu WJ, Liu P, Lei W, et al. Surveillance of SARS-CoV-2 at the Huanan Seafood Market. Nature 2023; published online April 5. DOI:10.1038/s41586-023-06043-2.
+Liu WJ, Liu P, Lei W, et al. Surveillance of SARS-CoV-2 at the Huanan Seafood Market. Nature 2023; published online April 5. DOI: [10.1038/s41586-023-06043-2](https://doi.org/10.1038/s41586-023-06043-2).
 
