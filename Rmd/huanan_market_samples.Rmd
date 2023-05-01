@@ -243,38 +243,70 @@ heatmap(as.matrix(aligned_per_sample_vs_species_common_name_log10),
 
 ```{r aligned_counts_per_sample}
 #### Aligned counts per sample
-
 aligned_per_sample <- apply(aligned_per_sample_vs_species_common_name, 1, sum)
 aligned_per_species <- apply(aligned_per_sample_vs_species_common_name, 2, sum)
 
 ```
 
 
-## Focus on the raccoon dog
+## Correlations between mitochondrial genome and SARS-CoV-2 read counts
 
-```{r racoon_dog, fig.width=10, fig.height=8, out.width="80%", fig.cap="Number of reads (log10-transformed) aligned against Racoon dog (abcsissa) versus SARS-CoV-2 (ordinate)."}
+```{r racoon_dog, fig.width=8, fig.height=12, out.width="100%", fig.cap="Number of reads (log10-transformed) aligned on mitochondrial genome of selected species (abcsissa) versus SARS-CoV-2 (ordinate)."}
 
-selected_species <- "raccoon dog"
+species_of_interest <- c("human", "cow", "raccoon dog", "snakehead fish", "Largemouth bass", "carp")
+selected_species <- "human"
 
-#### Focus on samples containing DNA from a given species ####
-species_subset <- subset(mito_composition_per_sample, common_name == selected_species)
-nrow(species_subset)
-plot(species_subset$aligned_reads_log10, species_subset$SARS2_aligned_reads_log10,
-     xlab = paste0("Aligned on mitochondrial genome from ", selected_species, ", log10(counts)"),
-     ylab = "Aligned on SARS-CoV-2, log10(counts)",
-     las=1)
-abline(h=-1:7, col="#DDDDDD")
-abline(v=-1:4, col="#DDDDDD")
-abline(h = 0)
-abline(v = 0)
+par(mfrow=c(3,2))
 
-nozero_subset <- subset(species_subset, species_subset$aligned_reads*species_subset$SARS2_aligned_reads > 0)
-nrow(nozero_subset)
+for (selected_species in species_of_interest) {
 
-(species_cor <- cor(species_subset$aligned_reads, species_subset$SARS2_aligned_reads))
-(nozero_species_cor <- cor(nozero_subset$aligned_reads, nozero_subset$SARS2_aligned_reads))
+  ## Select the subset of samples for the species of interest
+  species_subset <- subset(mito_composition_per_sample, common_name == selected_species)
+  species_common_name <- unique(species_subset$species_common_name)
 
+  ## Select the subset having strickly positive counts for both the species of interest and SARS-CoV-2
+  nozero <- (species_subset$aligned_reads > 0) & (species_subset$SARS2_aligned_reads > 0)
+  nozero_subset <- species_subset[nozero, ]
+  # View(nozero_subset)
+  # length(species_subset$aligned_reads*species_subset$SARS2_aligned_reads > 0)
+  # dim(species_subset)
+  # nrow(nozero_subset)
+  
+  species_subset$color <- "#000088"
+  species_subset[species_subset$aligned_reads == 0, "color"] <- "#880000"
+  species_subset[species_subset$SARS2_aligned_reads == 0, "color"] <- "#008800"
+    
+  ## Compute correlation between species counts and SARS-CoV-2 counts
+  species_cor <- cor(species_subset$aligned_reads, species_subset$SARS2_aligned_reads)
+  nozero_species_cor <- cor(nozero_subset$aligned_reads, nozero_subset$SARS2_aligned_reads)
+  species_log10_cor <- cor(species_subset$aligned_reads_log10, species_subset$SARS2_aligned_reads_log10)
+  nozero_species_log10_cor <- cor(nozero_subset$aligned_reads_log10, nozero_subset$SARS2_aligned_reads_log10)
+  
+  ## Scatter plot
+  plot(species_subset$aligned_reads_log10,
+       species_subset$SARS2_aligned_reads_log10,
+       main = species_common_name,
+       col = species_subset$color,
+       xlab = "Aligned on mitochondrial genome (log10 counts)",
+       ylab = "Aligned on SARS-CoV-2, log10(counts)",
+       las=1)
+  # points(nozero_subset$aligned_reads_log10,
+  #        nozero_subset$SARS2_aligned_reads_log10,
+  #        pch=2, col="black")
+  abline(h=-1:7, col="#DDDDDD")
+  abline(v=-1:4, col="#DDDDDD")
+  abline(h = 0)
+  abline(v = 0)
+  legend("topright", cex = 0.9,
+         legend = c(
+           paste0("cor=", round(species_cor, 3)),
+           paste0("nonzero cor=", round(nozero_species_cor, 3)),
+           paste0("log10 cor=", round(species_log10_cor, 3)),
+           paste0("nozero log10 cor=", round(nozero_species_log10_cor, 3))
+         ))
+}
 
+par(par_ori, no.readonly = TRUE)
 ```
 
 ## References
